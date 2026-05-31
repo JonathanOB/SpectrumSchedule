@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Atkinson_Hyperlegible, Inter, Lexend } from 'next/font/google';
+import { ClerkProvider } from '@clerk/nextjs';
 import { AccessibilityProvider } from '@/providers/accessibility-provider';
 import './globals.css';
 
@@ -65,7 +66,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${atkinson.variable} ${lexend.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
-        <AccessibilityProvider>{children}</AccessibilityProvider>
+        <ClerkProvider>
+          <AccessibilityProvider>{children}</AccessibilityProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
