@@ -1,7 +1,6 @@
 'use client';
 
 import { RotateCcw } from 'lucide-react';
-import type { Metadata } from 'next';
 import { AppShell } from '@/components/layout/app-shell';
 import { useAccessibility } from '@/hooks/use-accessibility';
 import {

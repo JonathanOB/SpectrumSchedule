@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { getSchedules } from '@/actions/schedule-actions';
 import { getRoutines } from '@/actions/routine-actions';
 import { getCompletionPercentage } from '@/lib/utils';
+import { WeeklyProgress } from '@/components/dashboard/weekly-progress';
 import type { Schedule } from '@/types';
 
 export const metadata: Metadata = { title: 'Dashboard' };
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {todayItems.length > 0 ? (
             <ProgressWidget completed={completedToday} total={todayItems.length} label="Today's progress" />
           ) : (
@@ -116,6 +117,8 @@ export default async function DashboardPage() {
               </Button>
             </CardContent>
           </Card>
+
+          <WeeklyProgress />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

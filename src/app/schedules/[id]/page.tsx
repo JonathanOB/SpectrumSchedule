@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { ScheduleBuilder } from '@/components/schedule/schedule-builder';
 import { ScheduleForm } from '@/components/schedule/schedule-form';
+import { ShareButton, PrintButton } from '@/components/schedule/share-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,7 +19,7 @@ import { cn, getCompletionPercentage } from '@/lib/utils';
 export default function ScheduleDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { schedules, hydrated, getSchedule, updateSchedule, addItem, updateItem, deleteItem, reorderItems } =
+  const { hydrated, getSchedule, updateSchedule, addItem, updateItem, deleteItem, reorderItems } =
     useLocalSchedules();
   const [showEdit, setShowEdit] = useState(false);
 
@@ -52,7 +53,7 @@ export default function ScheduleDetailPage() {
     <AppShell title={schedule.title}>
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Back + header */}
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-3 flex-wrap">
           <Button variant="ghost" size="icon" asChild aria-label="Back to schedules">
             <Link href="/schedules">
               <ArrowLeft className="size-5" />
@@ -74,10 +75,15 @@ export default function ScheduleDetailPage() {
             )}
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>
-            <Pencil className="size-4" />
-            Edit
-          </Button>
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            <PrintButton scheduleId={schedule.id} />
+            <ShareButton scheduleId={schedule.id} />
+            <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>
+              <Pencil className="size-4" />
+              Edit
+            </Button>
+          </div>
         </div>
 
         {/* Progress summary */}
@@ -123,14 +129,11 @@ export default function ScheduleDetailPage() {
       {/* Edit dialog */}
       <Dialog.Root open={showEdit} onOpenChange={setShowEdit}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm" />
           <Dialog.Content
             className={cn(
               'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md',
-              'bg-card border border-border shadow-xl rounded-[var(--radius-active,0.5rem)] p-6',
-              'data-[state=open]:animate-in data-[state=closed]:animate-out',
-              'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-              'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'
+              'bg-card border border-border shadow-xl rounded-[var(--radius-active,0.5rem)] p-6'
             )}
           >
             <div className="flex items-center justify-between mb-5">

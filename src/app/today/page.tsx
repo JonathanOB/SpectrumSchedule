@@ -19,6 +19,7 @@ import { useLocalSchedules } from '@/hooks/use-local-schedules';
 import { SCHEDULE_COLORS } from '@/lib/constants';
 import { cn, formatTime, getCompletionPercentage } from '@/lib/utils';
 import type { Schedule, ScheduleItem } from '@/types';
+import { saveProgress } from '@/components/dashboard/weekly-progress';
 
 // ─── Schedule picker ───────────────────────────────────────────────────────
 
@@ -234,9 +235,16 @@ export default function TodayPage() {
   ];
 
   const currentIndex = items.findIndex((i) => !i.completed && !skippedIds.has(i.id));
-  const currentItem = currentIndex >= 0 ? items[currentIndex] : null;
 
   const completedCount = items.filter((i) => i.completed).length;
+
+  // Persist daily progress so the weekly chart stays up to date
+  useEffect(() => {
+    if (!hydrated || items.length === 0) return;
+    const pct = Math.round((completedCount / items.length) * 100);
+    const dateKey = new Date().toISOString().slice(0, 10);
+    saveProgress(dateKey, pct);
+  }, [completedCount, items.length, hydrated]);
 
   function handleSkip(itemId: string) {
     setSkippedIds((prev) => new Set([...prev, itemId]));
