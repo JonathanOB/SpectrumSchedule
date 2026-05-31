@@ -1,4 +1,3 @@
-# SpectrumSchedule
-A visual routine and scheduling application for users with autism, ADHD or their caregivers, parents or support workers.
+# Spectrum Schedule
 
-Testing
+A visual scheduling application for children and adults with autism and / or ADHD. This app can also be used by their caregivers.
