@@ -6,9 +6,9 @@ A visual routine and schedule platform designed for autistic adults and children
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 16 (App Router) |
+| Framework | Next.js |
 | Language | TypeScript (strict) |
-| Styling | Tailwind CSS v4 |
+| Styling | Tailwind CSS |
 | Auth | Clerk |
 | Database | Supabase (PostgreSQL) |
 | Forms | React Hook Form + Zod |
@@ -139,3 +139,6 @@ vercel deploy --prod
 ## Licence
 
 MIT
+
+## Disclaimer
+This is an app built for a portfolio and not a production ready application. Certain testing may not have been conducted.
