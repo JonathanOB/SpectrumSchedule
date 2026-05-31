@@ -96,9 +96,9 @@ export function AccessibilitySection() {
                     onClick={() => setActiveTheme(theme)}
                     className={cn(
                       'flex items-center gap-2 px-3 py-2 rounded-[var(--radius-active,0.5rem)]',
-                      'text-sm border transition-all cursor-pointer',
+                      'text-sm border-2 transition-all cursor-pointer',
                       activeTheme.id === theme.id
-                        ? 'border-primary ring-2 ring-primary/30 font-medium'
+                        ? 'border-primary bg-primary/10 font-medium'
                         : 'border-border hover:border-primary/50'
                     )}
                     aria-pressed={activeTheme.id === theme.id}
@@ -128,8 +128,8 @@ export function AccessibilitySection() {
                       'flex flex-col items-start px-3 py-2.5 rounded-[var(--radius-active,0.5rem)]',
                       'text-sm border transition-all cursor-pointer text-left',
                       activeFont.id === font.id
-                        ? 'border-primary ring-2 ring-primary/30'
-                        : 'border-border hover:border-primary/50'
+                        ? 'border-2 border-primary bg-primary/10'
+                        : 'border-2 border-border hover:border-primary/50'
                     )}
                     aria-pressed={activeFont.id === font.id}
                   >
