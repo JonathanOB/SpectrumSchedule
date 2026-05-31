@@ -1,26 +1,284 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── OpenDyslexic (self-hosted) ──────────────────────────────────────────── */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Theme: Calm Blue (default) ─────────────────────────────────────────── */
+:root,
+[data-theme='calm-blue'] {
+  --background: #f0f4f8;
+  --foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #0f172a;
+  --accent: #0ea5e9;
+  --accent-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #cbd5e1;
+  --ring: #2563eb;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+}
+
+/* ─── Theme: Soft Green ──────────────────────────────────────────────────── */
+[data-theme='soft-green'] {
+  --background: #f0fdf4;
+  --foreground: #052e16;
+  --primary: #16a34a;
+  --primary-foreground: #ffffff;
+  --secondary: #dcfce7;
+  --secondary-foreground: #052e16;
+  --accent: #10b981;
+  --accent-foreground: #ffffff;
+  --muted: #f0fdf4;
+  --muted-foreground: #3f6b50;
+  --card: #ffffff;
+  --card-foreground: #052e16;
+  --border: #bbf7d0;
+  --ring: #16a34a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #ca8a04;
+  --warning-foreground: #ffffff;
+}
+
+/* ─── Theme: Warm Beige ──────────────────────────────────────────────────── */
+[data-theme='warm-beige'] {
+  --background: #fdf8f0;
+  --foreground: #1c1917;
+  --primary: #c2410c;
+  --primary-foreground: #ffffff;
+  --secondary: #fef3c7;
+  --secondary-foreground: #1c1917;
+  --accent: #d97706;
+  --accent-foreground: #ffffff;
+  --muted: #fef9ef;
+  --muted-foreground: #78716c;
+  --card: #fffbf5;
+  --card-foreground: #1c1917;
+  --border: #e7d4bb;
+  --ring: #d97706;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --success: #15803d;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+}
+
+/* ─── Theme: Lavender ────────────────────────────────────────────────────── */
+[data-theme='lavender'] {
+  --background: #f5f3ff;
+  --foreground: #1e0b3e;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #ede9fe;
+  --secondary-foreground: #1e0b3e;
+  --accent: #a78bfa;
+  --accent-foreground: #ffffff;
+  --muted: #f5f3ff;
+  --muted-foreground: #6b5f96;
+  --card: #ffffff;
+  --card-foreground: #1e0b3e;
+  --border: #ddd6fe;
+  --ring: #7c3aed;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+}
+
+/* ─── Theme: Dark ────────────────────────────────────────────────────────── */
+[data-theme='dark'] {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --accent: #818cf8;
+  --accent-foreground: #ffffff;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --border: #334155;
+  --ring: #6366f1;
+  --destructive: #f87171;
+  --destructive-foreground: #0f172a;
+  --success: #4ade80;
+  --success-foreground: #0f172a;
+  --warning: #fbbf24;
+  --warning-foreground: #0f172a;
+}
+
+/* ─── Theme: High Contrast ───────────────────────────────────────────────── */
+[data-theme='high-contrast'] {
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #ffff00;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
+  --accent: #00ffff;
+  --accent-foreground: #000000;
+  --muted: #111111;
+  --muted-foreground: #cccccc;
+  --card: #111111;
+  --card-foreground: #ffffff;
+  --border: #666666;
+  --ring: #ffff00;
+  --destructive: #ff4444;
+  --destructive-foreground: #000000;
+  --success: #00ff00;
+  --success-foreground: #000000;
+  --warning: #ff8800;
+  --warning-foreground: #000000;
+}
+
+/* ─── Tailwind v4 design tokens ─────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --font-sans: var(--font-active, var(--font-inter, Inter, system-ui, sans-serif));
+  --radius: var(--radius-active, 0.5rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Active defaults (overridden by JS via accessibility provider) ───────── */
+:root {
+  --font-active: var(--font-inter, Inter, system-ui, sans-serif);
+  --letter-spacing-active: normal;
+  --line-height-active: 1.75;
+  --radius-active: 0.5rem;
+}
+
+/* ─── Base styles ────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-active, var(--font-inter, Inter, system-ui, sans-serif));
+  letter-spacing: var(--letter-spacing-active, normal);
+  line-height: var(--line-height-active, 1.75);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Focus styles ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ─── Motion preferences ─────────────────────────────────────────────────── */
+.motion-reduced *,
+.motion-reduced *::before,
+.motion-reduced *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.motion-none *,
+.motion-none *::before,
+.motion-none *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not(.motion-normal) * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Print styles ───────────────────────────────────────────────────────── */
+@media print {
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break {
+    page-break-before: always;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }
