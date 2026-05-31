@@ -5,9 +5,12 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
+import { useAuth } from '@clerk/nextjs';
+import { savePreferences, getPreferences } from '@/actions/preference-actions';
 import type {
   AccessibilityPreferences,
   BorderRadius,
@@ -100,22 +103,36 @@ function applyPreferences(prefs: AccessibilityPreferences) {
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const [preferences, setPreferences] = useState<AccessibilityPreferences>(DEFAULT_PREFERENCES);
   const [hydrated, setHydrated] = useState(false);
+  const { isSignedIn } = useAuth();
+  const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load from localStorage on mount
+  // Load: localStorage first, then Supabase if signed in
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<AccessibilityPreferences>;
-        setPreferences((prev) => ({ ...prev, ...parsed }));
+    async function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as Partial<AccessibilityPreferences>;
+          setPreferences((prev) => ({ ...prev, ...parsed }));
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
+      if (isSignedIn) {
+        try {
+          const remote = await getPreferences();
+          if (remote) setPreferences(remote);
+        } catch {
+          // ignore — use localStorage values
+        }
+      }
+      setHydrated(true);
     }
-    setHydrated(true);
-  }, []);
+    load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
 
-  // Apply preferences to DOM and persist whenever they change
+  // Apply to DOM + persist (debounced Supabase sync for signed-in users)
   useEffect(() => {
     if (!hydrated) return;
     applyPreferences(preferences);
@@ -124,7 +141,13 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore
     }
-  }, [preferences, hydrated]);
+    if (isSignedIn) {
+      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+      syncTimerRef.current = setTimeout(() => {
+        savePreferences(preferences).catch(() => {/* ignore */});
+      }, 800);
+    }
+  }, [preferences, hydrated, isSignedIn]);
 
   const updatePreference = useCallback(
     <K extends keyof AccessibilityPreferences>(key: K, value: AccessibilityPreferences[K]) => {

@@ -66,7 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${atkinson.variable} ${lexend.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
-        <ClerkProvider>
+        <ClerkProvider
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          signInFallbackRedirectUrl="/dashboard"
+          signUpFallbackRedirectUrl="/dashboard"
+        >
           <AccessibilityProvider>{children}</AccessibilityProvider>
         </ClerkProvider>
       </body>
