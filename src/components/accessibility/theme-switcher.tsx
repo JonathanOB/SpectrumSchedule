@@ -1,71 +1,141 @@
 'use client';
 
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Palette } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useAccessibility } from '@/hooks/use-accessibility';
 import { COLOR_THEMES } from '@/lib/constants';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 export function ThemeSwitcher() {
   const { preferences, updatePreference } = useAccessibility();
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close on click outside
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: PointerEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [open]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Change colour theme"
-          title="Change colour theme"
-        >
-          <Palette className="size-5" aria-hidden="true" />
-        </Button>
-      </DropdownMenu.Trigger>
+    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Change colour theme"
+        title="Change colour theme"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Palette className="size-5" aria-hidden="true" />
+      </Button>
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className={cn(
-            'z-50 min-w-[200px] overflow-hidden',
-            'rounded-[var(--radius-active,0.5rem)] p-1',
-            'shadow-lg border',
-            // Explicit colours so the dropdown is always legible regardless of theme
-            'bg-white text-slate-900 border-slate-200',
-            '[data-theme=dark]_&:bg-slate-800 [data-theme=dark]_&:text-slate-100 [data-theme=dark]_&:border-slate-700'
-          )}
-          sideOffset={8}
-          align="end"
+      {open && (
+        <div
+          role="listbox"
+          aria-label="Colour theme"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 'calc(100% + 8px)',
+            zIndex: 9999,
+            minWidth: '200px',
+            backgroundColor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            padding: '4px',
+            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.12), 0 4px 6px -4px rgba(0,0,0,0.08)',
+          }}
         >
-          <p className="px-2 py-1.5 text-xs font-medium text-slate-500 select-none">
+          <p
+            style={{
+              padding: '6px 8px',
+              fontSize: '11px',
+              fontWeight: 600,
+              color: '#94a3b8',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              userSelect: 'none',
+            }}
+          >
             Colour Theme
           </p>
 
-          {COLOR_THEMES.map((theme) => (
-            <DropdownMenu.Item
-              key={theme.id}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer select-none',
-                'rounded-[calc(var(--radius-active,0.5rem)*0.75)]',
-                'outline-none',
-                // Radix highlights items via data-highlighted, not :hover/:focus
-                'data-[highlighted]:bg-slate-100',
-                preferences.colorTheme === theme.id && 'font-medium'
-              )}
-              onSelect={() => updatePreference('colorTheme', theme.id)}
-            >
-              <span
-                className="size-4 rounded-full border border-white/30 shrink-0 shadow-sm"
-                style={{ backgroundColor: theme.preview }}
-                aria-hidden="true"
-              />
-              <span className="flex-1">{theme.label}</span>
-              {preferences.colorTheme === theme.id && (
-                <span className="text-xs ml-auto" aria-hidden="true">✓</span>
-              )}
-            </DropdownMenu.Item>
-          ))}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+          {COLOR_THEMES.map((theme) => {
+            const active = preferences.colorTheme === theme.id;
+            return (
+              <button
+                key={theme.id}
+                role="option"
+                aria-selected={active}
+                onClick={() => {
+                  updatePreference('colorTheme', theme.id);
+                  setOpen(false);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: active ? '#f1f5f9' : 'transparent',
+                  fontWeight: active ? 600 : 400,
+                  color: '#0f172a',
+                  textAlign: 'left',
+                  lineHeight: '1.4',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f8fafc';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = active ? '#f1f5f9' : 'transparent';
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    backgroundColor: theme.preview,
+                    flexShrink: 0,
+                    boxShadow: '0 0 0 1.5px rgba(0,0,0,0.12)',
+                  }}
+                />
+                <span style={{ flex: 1 }}>{theme.label}</span>
+                {active && (
+                  <span aria-hidden="true" style={{ fontSize: '12px', color: '#64748b' }}>
+                    ✓
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
