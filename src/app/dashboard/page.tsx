@@ -38,8 +38,10 @@ async function fetchDashboardData(isAuthenticated: boolean) {
   if (!isAuthenticated) return { schedules: [], routines: [] };
   try {
     const [schedules, routines] = await Promise.all([getSchedules(), getRoutines()]);
+    console.log('[Dashboard]', { schedules: schedules.length, routines: routines.length });
     return { schedules, routines };
-  } catch {
+  } catch (e) {
+    console.error('[Dashboard] fetchDashboardData failed:', e);
     return { schedules: [], routines: [] };
   }
 }
@@ -53,6 +55,7 @@ export default async function DashboardPage() {
   const greeting = getGreeting();
 
   const activeSchedules = schedules.filter((s) => !s.archived);
+  
   const todaySchedule: Schedule | undefined = activeSchedules[0];
   const todayItems = todaySchedule?.items ?? [];
   const completedToday = todayItems.filter((i) => i.completed).length;

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { ThemeSwitcher } from '@/components/accessibility/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const NAV_LINKS = [
   { href: '#benefits', label: 'Benefits' },
@@ -25,12 +26,7 @@ export function LandingHeader() {
             href="/"
             className="flex items-center gap-2 font-bold text-xl text-foreground hover:text-primary transition-colors focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2 rounded-sm"
           >
-            <span
-              className="size-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold"
-              aria-hidden="true"
-            >
-              S
-            </span>
+            <Image src="/logo.png" alt="Logo" width={24} height={24} className="rounded-sm" />
             <span>Spectrum Schedule</span>
           </Link>
 

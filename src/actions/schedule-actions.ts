@@ -26,11 +26,16 @@ export async function ensureProfile(displayName?: string) {
 export async function getSchedules(): Promise<Schedule[]> {
   const userId = await requireAuth();
   const db = createServerClient();
+
+
+
   const { data, error } = await db
     .from('schedules')
     .select('*, schedule_items(*)')
     .eq('clerk_user_id', userId)
     .order('created_at', { ascending: false });
+
+    console.log("getSchedules data:", data);
   if (error) throw error;
   return (data ?? []).map(mapSchedule);
 }

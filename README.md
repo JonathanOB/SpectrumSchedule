@@ -63,8 +63,8 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_OUT_URL=/
 
 # Supabase — https://supabase.com
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+SUPABASE_SECRET_KEY=your-secret-key
 ```
 
 ### 3. Set up Supabase
@@ -142,3 +142,48 @@ MIT
 
 ## Disclaimer
 This is an app built for a portfolio and not a production ready application. Certain testing may not have been conducted.
+
+## Screenshots
+
+### **Desktop**
+#### Color Schemes
+
+1. Beige
+![image](readme_img/desktop/front_page_beige.png)
+2. Blue
+![image](readme_img/desktop/front_page_blue.png)
+3. Contrast
+![image](readme_img/desktop/front_page_contrast.png)
+4. Dark
+![image](readme_img/desktop/front_page_dark.png)
+5. Green
+![image](readme_img/desktop/front_page_green.png)
+6. Lavender
+![image](readme_img/desktop/front_page_lavender.png)
+
+#### Dashboard
+1. Main Dashboard Page
+![image](readme_img/desktop/dashboard.png)
+2. Schedules
+![image](readme_img/desktop/schedule.png)
+3. Routines
+![image](readme_img/desktop/routines.png)
+4. Accessibility (Entire themes, fonts, text size, borders etc. can be changed)
+![image](readme_img/desktop/accessibility.png)
+
+### Mobile
+1. Main Dashboard Page
+
+![image](readme_img/mobile/dashboard.png)
+
+2. Schedules
+
+![image](readme_img/mobile/schedules.png)
+
+3. Routines
+
+![image](readme_img/mobile/routines.png)
+
+4. Todays Schedule
+
+![image](readme_img/mobile/today.png)
