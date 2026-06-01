@@ -49,7 +49,7 @@ interface AccessibilityContextValue {
 
 const AccessibilityContext = createContext<AccessibilityContextValue | null>(null);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Maps ─────────────────────────────────────────────────────────────────────
 
 const TEXT_SIZE_MAP: Record<TextSize, string> = {
   small: '14px',
@@ -83,82 +83,112 @@ const RADIUS_MAP: Record<BorderRadius, string> = {
   soft: '1rem',
 };
 
-function applyPreferences(prefs: AccessibilityPreferences) {
-  const html = document.documentElement;
+// ─── DOM application ─────────────────────────────────────────────────────────
 
+// All DOM side-effects live here. Called synchronously so changes are instant.
+function applyPreferences(prefs: AccessibilityPreferences) {
+  if (typeof document === 'undefined') return;
+  const html = document.documentElement;
   html.setAttribute('data-theme', prefs.colorTheme);
-  html.style.fontSize = TEXT_SIZE_MAP[prefs.textSize];
+  html.style.fontSize = TEXT_SIZE_MAP[prefs.textSize] ?? '16px';
   html.style.setProperty('--font-active', FONT_MAP[prefs.fontFamily]);
   html.style.setProperty('--letter-spacing-active', LETTER_SPACING_MAP[prefs.letterSpacing]);
   html.style.setProperty('--line-height-active', LINE_HEIGHT_MAP[prefs.lineHeight]);
   html.style.setProperty('--radius-active', RADIUS_MAP[prefs.borderRadius]);
-
   html.classList.remove('motion-reduced', 'motion-none');
   if (prefs.motionPreference === 'reduced') html.classList.add('motion-reduced');
   if (prefs.motionPreference === 'none') html.classList.add('motion-none');
 }
 
+function persistLocal(prefs: AccessibilityPreferences) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  } catch {
+    // ignore
+  }
+}
+
+function loadLocal(): AccessibilityPreferences {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<AccessibilityPreferences>;
+      return { ...DEFAULT_PREFERENCES, ...parsed };
+    }
+  } catch {
+    // ignore
+  }
+  return DEFAULT_PREFERENCES;
+}
+
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
+  // Canonical source of truth lives in this ref so updatePreference is stable
+  // and never captures a stale closure.
+  const prefsRef = useRef<AccessibilityPreferences>(DEFAULT_PREFERENCES);
+
+  // React state is only used to trigger re-renders in consumers (e.g. to show
+  // the checkmark next to the active theme). It does NOT drive DOM updates.
   const [preferences, setPreferences] = useState<AccessibilityPreferences>(DEFAULT_PREFERENCES);
-  const [hydrated, setHydrated] = useState(false);
+
   const { isSignedIn } = useAuth();
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const supabaseSyncedRef = useRef(false);
 
-  // Load: localStorage first, then Supabase if signed in
+  // Apply a new preference object: update ref, DOM, localStorage, and React state.
+  const apply = useCallback((next: AccessibilityPreferences) => {
+    prefsRef.current = next;
+    applyPreferences(next);
+    persistLocal(next);
+    setPreferences(next);
+  }, []);
+
+  // 1. Load from localStorage on mount and apply immediately.
   useEffect(() => {
-    async function load() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as Partial<AccessibilityPreferences>;
-          setPreferences((prev) => ({ ...prev, ...parsed }));
-        }
-      } catch {
-        // ignore
-      }
-      if (isSignedIn) {
-        try {
-          const remote = await getPreferences();
-          if (remote) setPreferences(remote);
-        } catch {
-          // ignore — use localStorage values
-        }
-      }
-      setHydrated(true);
-    }
-    load();
+    apply(loadLocal());
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignedIn]);
+  }, []);
 
-  // Apply to DOM + persist (debounced Supabase sync for signed-in users)
+  // 2. Once signed in, overlay Supabase preferences (once per session).
   useEffect(() => {
-    if (!hydrated) return;
-    applyPreferences(preferences);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
-    } catch {
-      // ignore
-    }
-    if (isSignedIn) {
-      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
-      syncTimerRef.current = setTimeout(() => {
-        savePreferences(preferences).catch(() => {/* ignore */});
-      }, 800);
-    }
-  }, [preferences, hydrated, isSignedIn]);
+    if (!isSignedIn || supabaseSyncedRef.current) return;
+    supabaseSyncedRef.current = true;
+    getPreferences()
+      .then((remote) => {
+        if (remote) apply(remote);
+      })
+      .catch(() => {
+        // Fall back to localStorage values already loaded
+      });
+  }, [isSignedIn, apply]);
 
+  // 3. Debounced Supabase sync whenever preferences change for signed-in users.
+  useEffect(() => {
+    if (!isSignedIn) return;
+    if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(() => {
+      savePreferences(prefsRef.current).catch(() => {
+        // ignore
+      });
+    }, 800);
+    return () => {
+      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    };
+  }, [preferences, isSignedIn]);
+
+  // updatePreference is stable and applies changes synchronously.
   const updatePreference = useCallback(
     <K extends keyof AccessibilityPreferences>(key: K, value: AccessibilityPreferences[K]) => {
-      setPreferences((prev) => ({ ...prev, [key]: value }));
+      const next = { ...prefsRef.current, [key]: value };
+      apply(next);
     },
-    []
+    [apply]
   );
 
   const resetPreferences = useCallback(() => {
-    setPreferences(DEFAULT_PREFERENCES);
-  }, []);
+    apply(DEFAULT_PREFERENCES);
+  }, [apply]);
 
   return (
     <AccessibilityContext.Provider value={{ preferences, updatePreference, resetPreferences }}>
