@@ -2,6 +2,8 @@
 
 A visual routine and schedule platform designed for autistic adults and children, ADHD users, caregivers, and parents. Built with accessibility and simplicity as the primary requirements. Not a medical application.
 
+![image](readme_img/main_dark.jpg)
+
 ## Tech Stack
 
 | Layer | Technology |
